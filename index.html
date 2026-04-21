@@ -127,9 +127,54 @@
       letter-spacing: 1px;
       text-align: center;
     }
+
+    /* ── LIGHT MODE ── */
+    body.light-mode {
+      --navy:    #F5F5F7;
+      --surface: #FFFFFF;
+      --border:  #E0E0E0;
+      --white:   #06061A;
+      --muted:   #555E8A;
+      --blue:    #1800AD;
+    }
+
+    /* ── TOGGLE BUTTON ── */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: var(--border);
+      transition: background 0.3s;
+      padding: 0;
+    }
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--blue);
+      transition: all 0.3s;
+    }
+    body.light-mode .theme-toggle {
+      background: var(--blue);
+    }
+    body.light-mode .theme-toggle::after {
+      left: 19px;
+      background: #FFFFFF;
+    }
   </style>
 </head>
 <body>
+
+  <button class="theme-toggle" aria-label="Toggle light/dark mode" onclick="toggleTheme()"></button>
 
   <div class="logo-wrap">
     <div class="logo"><span>[</span>FRAME<span>]</span></div>
@@ -166,6 +211,33 @@
   </main>
 
   <footer>FRAME © 2026 · Shared Intelligence Hub</footer>
+
+  <script>
+    // ── Theme init ──
+    (function () {
+      const saved = localStorage.getItem('frame-theme');
+      let prefersDark;
+      if (saved) {
+        prefersDark = saved === 'dark';
+      } else {
+        prefersDark = !window.matchMedia('(prefers-color-scheme: light)').matches;
+      }
+      document.body.classList.toggle('light-mode', !prefersDark);
+    })();
+
+    // ── Toggle ──
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light-mode');
+      localStorage.setItem('frame-theme', isLight ? 'light' : 'dark');
+    }
+
+    // ── Cross-tab sync ──
+    window.addEventListener('storage', function (e) {
+      if (e.key === 'frame-theme' && e.newValue) {
+        document.body.classList.toggle('light-mode', e.newValue === 'light');
+      }
+    });
+  </script>
 
 </body>
 </html>
